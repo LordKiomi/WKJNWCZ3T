@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piwko czy Randka?</title>
+    <!-- Importujemy Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Płynne uciekanie przycisku */
+        #btn-no {
+            transition: top 0.15s ease-out, left 0.15s ease-out;
+            z-index: 100; 
+        }
+        
+        /* Delikatna animacja unoszenia się dla elementów ozdobnych */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-300 via-purple-300 to-pink-300 min-h-screen flex items-center justify-center font-sans overflow-hidden m-0 p-0">
+
+    <!-- Główna karta zaproszenia -->
+    <div id="card" class="bg-white/90 backdrop-blur-lg p-8 md:p-12 rounded-3xl shadow-2xl text-center max-w-2xl w-[95%] border-4 border-white/50 relative">
+        <div class="text-6xl mb-6 animate-float flex justify-center gap-4">
+            <span>🍻</span>
+            <span>🤔</span>
+            <span>❤️</span>
+        </div>
+        <h1 class="text-3xl md:text-5xl font-black text-gray-800 mb-10 leading-tight tracking-tight">
+            To jak, idziemy na <span class="text-amber-500">piwko</span> czy to już <span class="text-rose-500">randka?</span>
+        </h1>
+        
+        <div class="flex flex-col md:flex-row justify-center gap-4 items-center min-h-[60px]" id="button-group">
+            <!-- Przycisk Tylko Piwko -->
+            <button id="btn-beer" class="px-6 py-3 bg-amber-400 text-amber-950 font-bold rounded-xl hover:bg-amber-500 transform hover:scale-105 active:scale-95 transition-all shadow-lg text-lg border-b-4 border-amber-600 w-full md:w-auto z-10">
+                Piwko 🍺
+            </button>
+            
+            <!-- Przycisk Randka -->
+            <button id="btn-date" class="px-6 py-3 bg-rose-500 text-white font-bold rounded-xl hover:bg-rose-600 transform hover:scale-105 active:scale-95 transition-all shadow-lg text-lg border-b-4 border-rose-700 w-full md:w-auto z-10">
+                Randka ❤️
+            </button>
+
+            <!-- Przycisk NIE (Troll button) -->
+            <button id="btn-no" class="px-6 py-3 bg-gray-500 text-white font-bold rounded-xl shadow-lg text-lg border-b-4 border-gray-700 w-full md:w-auto cursor-not-allowed absolute md:relative mt-4 md:mt-0">
+                Nie idę
+            </button>
+        </div>
+    </div>
+
+    <!-- Ekran Piwko -->
+    <div id="beer-screen" class="hidden flex-col items-center justify-center absolute inset-0 z-50 p-6 text-center bg-black/70 bg-blend-overlay" style="background-image: url('https://images.unsplash.com/photo-1538481199005-271561c0f94f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'); background-size: cover; background-position: center;">
+        <p class="text-2xl md:text-5xl font-bold text-white drop-shadow-2xl max-w-3xl leading-relaxed">
+           No dobraaa to jednak tylko piwko 🍺 
+        </p>
+    </div>
+
+    <!-- Ekran Randka -->
+    <div id="date-screen" class="hidden flex-col items-center justify-center absolute inset-0 bg-gradient-to-br from-rose-400 to-pink-600 z-50 p-6 text-center">
+        <!-- Bezpośredni link do Giphy: Kot w butach -->
+        <img src="https://media.giphy.com/media/qUIm5wu6LAAog/giphy.gif" 
+             alt="Kot w butach słodkie oczy" 
+             class="max-w-[90%] max-h-[50vh] rounded-2xl shadow-2xl object-cover border-4 border-white/50 mb-8"
+             onerror="this.onerror=null; this.src='https://cataas.com/cat/cute';">
+        <p class="text-2xl md:text-5xl font-bold text-white drop-shadow-lg max-w-3xl leading-relaxed">
+            Po więcej informacji proszę się kontakować z administratorem strony ;)
+        </p>
+    </div>
+
+    <!-- Ekran Nuh Uh -->
+    <div id="nuh-uh-screen" class="hidden flex-col items-center justify-center absolute inset-0 bg-black z-[100] p-6 text-center">
+        <!-- Bezpośredni link do Giphy: Nuh Uh animacja -->
+        <img src="https://media.giphy.com/media/d1E1msx7Yw5Ne1Fe/giphy.gif" 
+             alt="Nuh uh" 
+             class="max-w-[90%] max-h-[60vh] rounded-2xl shadow-2xl object-contain border-4 border-white/10"
+             onerror="this.onerror=null; this.src='https://placehold.co/600x400/000000/FFFFFF?text=NUH+UH';">
+        <h1 class="text-5xl md:text-8xl font-black text-white mt-8 uppercase tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+            Nuh Uh!
+        </h1>
+    </div>
+
+    <script>
+        const btnBeer = document.getElementById('btn-beer');
+        const btnDate = document.getElementById('btn-date');
+        const btnNo = document.getElementById('btn-no');
+        
+        const card = document.getElementById('card');
+        const beerScreen = document.getElementById('beer-screen');
+        const dateScreen = document.getElementById('date-screen');
+        const nuhUhScreen = document.getElementById('nuh-uh-screen');
+
+        let isAbsolute = false;
+        let escapeCount = 0;
+
+        // Funkcja ukrywająca kartę główną i pokazująca wybrany ekran
+        function showScreen(screenElement) {
+            card.classList.add('hidden');
+            btnNo.classList.add('hidden'); // ukrywamy uciekający przycisk na wszelki wypadek
+            screenElement.classList.remove('hidden');
+            screenElement.classList.add('flex');
+        }
+
+        // Logika uciekania przycisku
+        function moveButton() {
+            escapeCount++;
+
+            // Po 10 ucieczkach pokaż Nuh Uh!
+            if (escapeCount >= 10) {
+                showScreen(nuhUhScreen);
+                return;
+            }
+
+            if (!isAbsolute) {
+                btnNo.style.position = 'fixed';
+                isAbsolute = true;
+            }
+
+            const btnWidth = btnNo.offsetWidth;
+            const btnHeight = btnNo.offsetHeight;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            
+            // Margines bezpieczeństwa, żeby przycisk nie wyleciał poza ekran
+            const padding = 20;
+
+            const randomX = padding + Math.random() * (windowWidth - btnWidth - padding * 2);
+            const randomY = padding + Math.random() * (windowHeight - btnHeight - padding * 2);
+
+            btnNo.style.left = `${randomX}px`;
+            btnNo.style.top = `${randomY}px`;
+        }
+
+        // Eventy uciekania dla przycisku "Nie"
+        btnNo.addEventListener('mouseover', moveButton);
+        btnNo.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Zapobiega "kliknięciu" przy dotyku na telefonie przed ucieczką
+            moveButton();
+        });
+
+        // Event dla przycisku "Piwko"
+        btnBeer.addEventListener('click', () => {
+            showScreen(beerScreen);
+        });
+
+        // Event dla przycisku "Randka"
+        btnDate.addEventListener('click', () => {
+            showScreen(dateScreen);
+        });
+
+        // Nuh uh - jeśli ktoś jakimś cudem zdoła kliknąć "Nie" (np. klawiaturą)
+        btnNo.addEventListener('click', () => {
+            showScreen(nuhUhScreen);
+        });
+    </script>
+</body>
+</html>
